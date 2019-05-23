@@ -10,6 +10,7 @@ import com.ipiecoles.java.java230.repository.ManagerRepository;
 import org.aspectj.weaver.ast.Or;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -122,29 +124,53 @@ public class MyRunner implements CommandLineRunner {
         // nombre de champs
         if (commercialFields.length != NB_CHAMPS_COMMERCIAL)
             {
-            throw new BatchException("La ligne commercial ne contient pas " + NB_CHAMPS_COMMERCIAL + " éléments " );
+            throw new BatchException("La ligne commercial ne contient pas " + NB_CHAMPS_COMMERCIAL + " éléments mais " + commercialFields.length );
             }
+
         // contrôle le matricule
-        else if (!commercialFields[0].matches(REGEX_MATRICULE))
+        if (!commercialFields[0].matches(REGEX_MATRICULE))
             {
-            throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE);
-            }
-        else
-            {
-            Commercial c = new Commercial();
-            employes.add(c);
+            throw new BatchException("la chaîne " + commercialFields[0] + " ne respecte pas l'expression régulière " + REGEX_MATRICULE);
             }
 
-
-
+        // contrôle de la date
         try {
-            LocalDate L = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate("");
-        }
-        catch ()
-        {
-
+            LocalDate L = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(commercialFields[3]);
+        } catch (Exception e) {
+            throw new BatchException(commercialFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
         }
 
+        // contrôle du salaire
+        try {
+            double F = Double.parseDouble(commercialFields[4]);
+        } catch (Exception e) {
+            throw new BatchException(commercialFields[4] + " n'est pas un nombre valide pour un salaire" );
+        }
+
+        // contrôle du chiffre d'affaire
+        try {
+            double D = Double.parseDouble(commercialFields[5]);
+        } catch (Exception e) {
+            throw new BatchException("Le chiffre d'affaire du commercial est incorrect : " + commercialFields[5]);
+        }
+
+        // contrôle de la performance
+        try {
+            int I = Integer.parseInt(commercialFields[6]);
+        } catch (Exception e) {
+            throw new BatchException("La performance du commercial est incorrecte : " + commercialFields[6]);
+        }
+
+        // ajout en base de données
+        Commercial c = new Commercial();
+        c.setMatricule(commercialFields[0]);
+        c.setNom(commercialFields[1]);
+        c.setPrenom(commercialFields[2]);
+        //c.setDateEmbauche(LocalDate.parse(commercialFields[3]));
+        c.setSalaire(Double.parseDouble(commercialFields[4]));
+        c.setCaAnnuel(Double.parseDouble(commercialFields[5]));
+        c.setPerformance(Integer.parseInt(commercialFields[6]));
+            employes.add(c);
 
     }
 
@@ -158,14 +184,13 @@ public class MyRunner implements CommandLineRunner {
         String[] managerFields = ligneManager.split(",");
 
         // contrôle le matricule
-        if (managerFields[0].matches(REGEX_MATRICULE_MANAGER))
+        if (!managerFields[0].matches(REGEX_MATRICULE_MANAGER))
         {
-            Manager m = new Manager();
-            employes.add(m);
-        }
-        else
             throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE_MANAGER);
+        }
 
+        Manager m = new Manager();
+        employes.add(m);
     }
 
     /**
@@ -178,13 +203,13 @@ public class MyRunner implements CommandLineRunner {
         String[] technicienFields = ligneTechnicien.split(",");
 
         // contrôle le matricule
-        if (technicienFields[0].matches(REGEX_MATRICULE))
+        if (!technicienFields[0].matches(REGEX_MATRICULE))
         {
-            Technicien t = new Technicien();
-            employes.add(t);
-        }
-        else
             throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE);
+        }
+        Technicien t = new Technicien();
+        employes.add(t);
+
 
 
     }
