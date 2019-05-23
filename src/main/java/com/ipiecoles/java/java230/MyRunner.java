@@ -1,6 +1,7 @@
 package com.ipiecoles.java.java230;
 
 import com.ipiecoles.java.java230.exceptions.BatchException;
+import com.ipiecoles.java.java230.exceptions.TechnicienException;
 import com.ipiecoles.java.java230.model.Commercial;
 import com.ipiecoles.java.java230.model.Employe;
 import com.ipiecoles.java.java230.model.Manager;
@@ -83,7 +84,7 @@ public class MyRunner implements CommandLineRunner {
             {
                 try {
                     processLine(lignes.get(i));
-                } catch (BatchException e) {
+                } catch (Exception e) {
                     logger.error("Ligne " + (i+1) + " : " + e.getMessage() + " => " + lignes.get(i));
                 }
             }
@@ -95,7 +96,7 @@ public class MyRunner implements CommandLineRunner {
      * @param ligne la ligne à analyser
      * @throws BatchException si le type d'employé n'a pas été reconnu
      */
-    private void processLine(String ligne) throws BatchException {
+    private void processLine(String ligne) throws Exception {
         //TODO :
         switch (ligne.substring(0,1)){
             case "T" :
@@ -117,8 +118,8 @@ public class MyRunner implements CommandLineRunner {
      * @param ligneCommercial la ligne contenant les infos du commercial à intégrer
      * @throws BatchException s'il y a un problème sur cette ligne
      */
-    private void processCommercial(String ligneCommercial) throws BatchException {
-        //TODO
+    private void processCommercial(String ligneCommercial) throws Exception {
+
         String[] commercialFields = ligneCommercial.split(",");
 
         // nombre de champs
@@ -134,29 +135,33 @@ public class MyRunner implements CommandLineRunner {
             }
 
         // contrôle de la date
+        LocalDate D = null ;
         try {
-            LocalDate L = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(commercialFields[3]);
+            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(commercialFields[3]);
         } catch (Exception e) {
             throw new BatchException(commercialFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
         }
 
         // contrôle du salaire
+        double S ;
         try {
-            double F = Double.parseDouble(commercialFields[4]);
+            S = Double.parseDouble(commercialFields[4]);
         } catch (Exception e) {
             throw new BatchException(commercialFields[4] + " n'est pas un nombre valide pour un salaire" );
         }
 
         // contrôle du chiffre d'affaire
+        double CA ;
         try {
-            double D = Double.parseDouble(commercialFields[5]);
+            CA = Double.parseDouble(commercialFields[5]);
         } catch (Exception e) {
             throw new BatchException("Le chiffre d'affaire du commercial est incorrect : " + commercialFields[5]);
         }
 
         // contrôle de la performance
+        int P ;
         try {
-            int I = Integer.parseInt(commercialFields[6]);
+            P = Integer.parseInt(commercialFields[6]);
         } catch (Exception e) {
             throw new BatchException("La performance du commercial est incorrecte : " + commercialFields[6]);
         }
@@ -166,11 +171,12 @@ public class MyRunner implements CommandLineRunner {
         c.setMatricule(commercialFields[0]);
         c.setNom(commercialFields[1]);
         c.setPrenom(commercialFields[2]);
-        //c.setDateEmbauche(LocalDate.parse(commercialFields[3]));
-        c.setSalaire(Double.parseDouble(commercialFields[4]));
-        c.setCaAnnuel(Double.parseDouble(commercialFields[5]));
-        c.setPerformance(Integer.parseInt(commercialFields[6]));
-            employes.add(c);
+        c.setDateEmbauche(D);
+        c.setSalaire(S);
+        c.setCaAnnuel(CA);
+        c.setPerformance(P);
+
+        employes.add(c);
 
     }
 
@@ -179,9 +185,15 @@ public class MyRunner implements CommandLineRunner {
      * @param ligneManager la ligne contenant les infos du manager à intégrer
      * @throws BatchException s'il y a un problème sur cette ligne
      */
-    private void processManager(String ligneManager) throws BatchException {
-        //TODO
+    private void processManager(String ligneManager) throws Exception {
+
         String[] managerFields = ligneManager.split(",");
+
+        // nombre de champs
+        if (managerFields.length != NB_CHAMPS_MANAGER)
+        {
+            throw new BatchException("La ligne manager ne contient pas " + NB_CHAMPS_MANAGER + " éléments mais " + managerFields.length );
+        }
 
         // contrôle le matricule
         if (!managerFields[0].matches(REGEX_MATRICULE_MANAGER))
@@ -189,7 +201,31 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE_MANAGER);
         }
 
+        // contrôle de la date
+        LocalDate D = null;
+        try {
+            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(managerFields[3]);
+        } catch (Exception e) {
+            throw new BatchException(managerFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
+        }
+
+        // contrôle du salaire
+        double S ;
+        try {
+            S = Double.parseDouble(managerFields[4]);
+        } catch (Exception e) {
+            throw new BatchException(managerFields[4] + " n'est pas un nombre valide pour un salaire" );
+        }
+
+
+        // ajout en base de données
         Manager m = new Manager();
+        m.setMatricule(managerFields[0]);
+        m.setNom(managerFields[1]);
+        m.setPrenom(managerFields[2]);
+        m.setDateEmbauche(D);
+        m.setSalaire(S);
+
         employes.add(m);
     }
 
@@ -198,17 +234,70 @@ public class MyRunner implements CommandLineRunner {
      * @param ligneTechnicien la ligne contenant les infos du technicien à intégrer
      * @throws BatchException s'il y a un problème sur cette ligne
      */
-    private void processTechnicien(String ligneTechnicien) throws BatchException {
+    private void processTechnicien(String ligneTechnicien) throws BatchException, TechnicienException {
         //TODO
         String[] technicienFields = ligneTechnicien.split(",");
+
+        // nombre de champs
+        if (technicienFields.length != NB_CHAMPS_TECHNICIEN)
+        {
+            throw new BatchException("La ligne commercial ne contient pas " + NB_CHAMPS_TECHNICIEN + " éléments mais " + technicienFields.length );
+        }
 
         // contrôle le matricule
         if (!technicienFields[0].matches(REGEX_MATRICULE))
         {
             throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE);
         }
+
+        // contrôle de la date
+        LocalDate D = null ;
+        try {
+            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(technicienFields[3]);
+        } catch (Exception e) {
+            throw new BatchException(technicienFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
+        }
+
+        // contrôle du salaire
+        double S ;
+        try {
+            S = Double.parseDouble(technicienFields[4]);
+        } catch (Exception e) {
+            throw new BatchException(technicienFields[4] + " n'est pas un nombre valide pour un salaire" );
+        }
+
+        // contrôle du grade
+        int i ;
+        try {
+            i = Integer.parseInt(technicienFields[5]);
+        } catch (Exception e) {
+            throw new BatchException("Le grade du technicien est incorrect : " + technicienFields[5] );
+        }
+
+        if (i < 1 || i > 5){
+            throw new BatchException("Le grade doit être compris entre 1 et 5 :" );
+        }
+
+        // contrôle du matricule du manager
+        if (!technicienFields[6].matches(REGEX_MATRICULE_MANAGER))
+        {
+            throw new BatchException("La chaîne " + technicienFields[6] + " ne respecte pas l'expression régulière " + REGEX_MATRICULE_MANAGER);
+        }
+
+        // ajout en base de données
         Technicien t = new Technicien();
+        t.setMatricule(technicienFields[0]);
+        t.setNom(technicienFields[1]);
+        t.setPrenom(technicienFields[2]);
+        t.setDateEmbauche(D);
+        t.setSalaire(S);
+        t.setGrade(i);
+        //t.setManager(technicienFields[6]);
+
+
+
         employes.add(t);
+
 
 
 
