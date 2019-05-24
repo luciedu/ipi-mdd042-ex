@@ -101,7 +101,7 @@ public class MyRunner implements CommandLineRunner {
      * @param ligne la ligne à analyser
      * @throws BatchException si le type d'employé n'a pas été reconnu
      */
-    private void processLine(String ligne) throws Exception {
+    private void processLine(String ligne) throws BatchException {
         //TODO :
         switch (ligne.substring(0,1)){
             case "T" :
@@ -123,7 +123,7 @@ public class MyRunner implements CommandLineRunner {
      * @param ligneCommercial la ligne contenant les infos du commercial à intégrer
      * @throws BatchException s'il y a un problème sur cette ligne
      */
-    private void processCommercial(String ligneCommercial) throws Exception {
+    private void processCommercial(String ligneCommercial) throws BatchException {
 
         String[] commercialFields = ligneCommercial.split(",");
 
@@ -190,7 +190,7 @@ public class MyRunner implements CommandLineRunner {
      * @param ligneManager la ligne contenant les infos du manager à intégrer
      * @throws BatchException s'il y a un problème sur cette ligne
      */
-    private void processManager(String ligneManager) throws Exception {
+    private void processManager(String ligneManager) throws BatchException {
 
         String[] managerFields = ligneManager.split(",");
 
@@ -239,7 +239,7 @@ public class MyRunner implements CommandLineRunner {
      * @param ligneTechnicien la ligne contenant les infos du technicien à intégrer
      * @throws BatchException s'il y a un problème sur cette ligne
      */
-    private void processTechnicien(String ligneTechnicien) throws BatchException, TechnicienException {
+    private void processTechnicien(String ligneTechnicien) throws BatchException {
 
         String[] technicienFields = ligneTechnicien.split(",");
 
@@ -309,12 +309,16 @@ public class MyRunner implements CommandLineRunner {
 
         t.setSalaire(Salaire);
         t.setManager(managerRepository.findByMatricule(technicienFields[6]));
-
         employes.add(t);
 
 
 
 
     }
+
+
+
+
+
 
 }
