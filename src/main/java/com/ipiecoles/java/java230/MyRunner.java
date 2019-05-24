@@ -118,6 +118,43 @@ public class MyRunner implements CommandLineRunner {
         }
     }
 
+    private void processEmploye(Employe employe, String ligneEmploye,String regexMatricule) throws BatchException {
+        String[]employeFields = ligneEmploye.split(",");
+
+        //controle matricule
+        //String regexMatricule = "";
+        if (!employeFields[0].matches(regexMatricule)){
+            throw new BatchException("la chaîne "+ employeFields[0] +" ne respecte pas l'expression régulière " + regexMatricule );
+        }
+
+        //controle de la date
+        LocalDate d =null;
+        try
+        {
+            d =  DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(employeFields[3]);
+
+        }catch (Exception e){
+            throw new BatchException(employeFields[3] + " ne respecte pas le format de date dd/MM/yyyy");
+        }
+
+        //controle du salaire
+        double salaire= 0;
+        try {
+            salaire = Double.parseDouble(employeFields[4]);
+        }catch (Exception e){
+            throw new BatchException(employeFields[4] + " n'est pas un nombre valide pour un salaire");
+        }
+
+        employe.setMatricule(employeFields[0]);
+        employe.setNom(employeFields[1]);
+        employe.setPrenom(employeFields[2]);
+        employe.setDateEmbauche(d);
+        employe.setSalaire(Double.parseDouble(employeFields[4]));
+
+
+
+    }
+
     /**
      * Méthode qui crée un Commercial à partir d'une ligne contenant les informations d'un commercial et l'ajoute dans la liste globale des employés
      * @param ligneCommercial la ligne contenant les infos du commercial à intégrer
@@ -133,27 +170,28 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("La ligne commercial ne contient pas " + NB_CHAMPS_COMMERCIAL + " éléments mais " + commercialFields.length );
             }
 
-        // contrôle le matricule
-        if (!commercialFields[0].matches(REGEX_MATRICULE))
-            {
-            throw new BatchException("la chaîne " + commercialFields[0] + " ne respecte pas l'expression régulière " + REGEX_MATRICULE);
-            }
-
-        // contrôle de la date
-        LocalDate D = null ;
-        try {
-            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(commercialFields[3]);
-        } catch (Exception e) {
-            throw new BatchException(commercialFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
-        }
-
-        // contrôle du salaire
-        double S ;
-        try {
-            S = Double.parseDouble(commercialFields[4]);
-        } catch (Exception e) {
-            throw new BatchException(commercialFields[4] + " n'est pas un nombre valide pour un salaire" );
-        }
+        /** Contrôles effectués au départ factorisés par la suite */
+//        // contrôle le matricule
+//        if (!commercialFields[0].matches(REGEX_MATRICULE))
+//            {
+//            throw new BatchException("la chaîne " + commercialFields[0] + " ne respecte pas l'expression régulière " + REGEX_MATRICULE);
+//            }
+//
+//        // contrôle de la date
+//        LocalDate D = null ;
+//        try {
+//            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(commercialFields[3]);
+//        } catch (Exception e) {
+//            throw new BatchException(commercialFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
+//        }
+//
+//        // contrôle du salaire
+//        double S ;
+//        try {
+//            S = Double.parseDouble(commercialFields[4]);
+//        } catch (Exception e) {
+//            throw new BatchException(commercialFields[4] + " n'est pas un nombre valide pour un salaire" );
+//        }
 
         // contrôle du chiffre d'affaire
         double CA ;
@@ -171,13 +209,10 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("La performance du commercial est incorrecte : " + commercialFields[6]);
         }
 
+
         // ajout en base de données
         Commercial c = new Commercial();
-        c.setMatricule(commercialFields[0]);
-        c.setNom(commercialFields[1]);
-        c.setPrenom(commercialFields[2]);
-        c.setDateEmbauche(D);
-        c.setSalaire(S);
+        processEmploye(c,ligneCommercial,REGEX_MATRICULE);
         c.setCaAnnuel(CA);
         c.setPerformance(P);
 
@@ -200,37 +235,33 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("La ligne manager ne contient pas " + NB_CHAMPS_MANAGER + " éléments mais " + managerFields.length );
         }
 
-        // contrôle le matricule
-        if (!managerFields[0].matches(REGEX_MATRICULE_MANAGER))
-        {
-            throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE_MANAGER);
-        }
-
-        // contrôle de la date
-        LocalDate D = null;
-        try {
-            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(managerFields[3]);
-        } catch (Exception e) {
-            throw new BatchException(managerFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
-        }
-
-        // contrôle du salaire
-        double Salaire ;
-        try {
-            Salaire = Double.parseDouble(managerFields[4]);
-        } catch (Exception e) {
-            throw new BatchException(managerFields[4] + " n'est pas un nombre valide pour un salaire" );
-        }
+          /** Contrôles effectués au départ factorisés par la suite */
+//        // contrôle le matricule
+//        if (!managerFields[0].matches(REGEX_MATRICULE_MANAGER))
+//        {
+//            throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE_MANAGER);
+//        }
+//
+//        // contrôle de la date
+//        LocalDate D = null;
+//        try {
+//            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(managerFields[3]);
+//        } catch (Exception e) {
+//            throw new BatchException(managerFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
+//        }
+//
+//        // contrôle du salaire
+//        double Salaire ;
+//        try {
+//            Salaire = Double.parseDouble(managerFields[4]);
+//        } catch (Exception e) {
+//            throw new BatchException(managerFields[4] + " n'est pas un nombre valide pour un salaire" );
+//        }
 
 
         // ajout en base de données
         Manager m = new Manager();
-        m.setMatricule(managerFields[0]);
-        m.setNom(managerFields[1]);
-        m.setPrenom(managerFields[2]);
-        m.setDateEmbauche(D);
-        m.setSalaire(Salaire);
-
+        processEmploye(m,ligneManager,REGEX_MATRICULE_MANAGER);
         employes.add(m);
     }
 
@@ -249,27 +280,28 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("La ligne commercial ne contient pas " + NB_CHAMPS_TECHNICIEN + " éléments mais " + technicienFields.length );
         }
 
-        // contrôle le matricule
-        if (!technicienFields[0].matches(REGEX_MATRICULE))
-        {
-            throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE);
-        }
-
-        // contrôle de la date
-        LocalDate D = null ;
-        try {
-            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(technicienFields[3]);
-        } catch (Exception e) {
-            throw new BatchException(technicienFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
-        }
-
-        // contrôle du salaire
-        double Salaire ;
-        try {
-            Salaire = Double.parseDouble(technicienFields[4]);
-        } catch (Exception e) {
-            throw new BatchException(technicienFields[4] + " n'est pas un nombre valide pour un salaire" );
-        }
+          /** Contrôles effectués au départ factorisés par la suite */
+//        // contrôle le matricule
+//        if (!technicienFields[0].matches(REGEX_MATRICULE))
+//        {
+//            throw new BatchException("la chaîne ne respecte pas l'expression régulière " + REGEX_MATRICULE);
+//        }
+//
+//        // contrôle de la date
+//        LocalDate D = null ;
+//        try {
+//            D = DateTimeFormat.forPattern("dd/MM/yyyy").parseLocalDate(technicienFields[3]);
+//        } catch (Exception e) {
+//            throw new BatchException(technicienFields[3] + " ne respecte pas le format de date dd/MM/yyyy" );
+//        }
+//
+//        // contrôle du salaire
+//        double Salaire ;
+//        try {
+//            Salaire = Double.parseDouble(technicienFields[4]);
+//        } catch (Exception e) {
+//            throw new BatchException(technicienFields[4] + " n'est pas un nombre valide pour un salaire" );
+//        }
 
         // contrôle du grade
         int grade ;
@@ -296,10 +328,6 @@ public class MyRunner implements CommandLineRunner {
 
         // ajout en base de données
         Technicien t = new Technicien();
-        t.setMatricule(technicienFields[0]);
-        t.setNom(technicienFields[1]);
-        t.setPrenom(technicienFields[2]);
-        t.setDateEmbauche(D);
         try {
             t.setGrade(grade);
             }
@@ -307,8 +335,8 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("Le grade doit être compris entre 1 et 5 :" );
         }
 
-        t.setSalaire(Salaire);
         t.setManager(managerRepository.findByMatricule(technicienFields[6]));
+        processEmploye(t,ligneTechnicien,REGEX_MATRICULE);
         employes.add(t);
 
 

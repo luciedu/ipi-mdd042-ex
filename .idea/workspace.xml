@@ -4,6 +4,7 @@
     <list default="true" id="f497e0d5-4f47-4684-8fef-b23db745ccf7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/ipiecoles/java/java230/MyRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ipiecoles/java/java230/MyRunner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/ipiecoles/java/java230/MyRunner.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/ipiecoles/java/java230/MyRunner.class" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -17,16 +18,20 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/ipiecoles/java/java230/MyRunner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="91">
-              <caret line="229" column="38" lean-forward="true" selection-start-line="229" selection-start-column="38" selection-end-line="229" selection-end-column="38" />
+            <state relative-caret-position="242">
+              <caret line="281" column="8" selection-start-line="281" selection-start-column="8" selection-end-line="281" selection-end-column="8" />
               <folding>
                 <element signature="docComment;field#logger#0;class#MyRunner#0" />
                 <element signature="method#run#0;class#MyRunner#0" />
                 <element signature="docComment;method#readFile#0;class#MyRunner#0" />
                 <element signature="method#readFile#0;class#MyRunner#0" />
                 <element signature="docComment;method#processLine#0;class#MyRunner#0" />
+                <element signature="method#processLine#0;class#MyRunner#0" />
+                <element signature="method#processEmploye#0;class#MyRunner#0" />
                 <element signature="docComment;method#processCommercial#0;class#MyRunner#0" />
+                <element signature="method#processCommercial#0;class#MyRunner#0" />
                 <element signature="docComment;method#processManager#0;class#MyRunner#0" />
+                <element signature="method#processManager#0;class#MyRunner#0" />
                 <element signature="docComment;method#processTechnicien#0;class#MyRunner#0" />
               </folding>
             </state>
@@ -46,7 +51,7 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="FIRST">
-              <first_editor relative-caret-position="425">
+              <first_editor relative-caret-position="374">
                 <caret line="82" column="98" lean-forward="true" selection-start-line="82" selection-start-column="11" selection-end-line="82" selection-end-column="98" />
               </first_editor>
               <second_editor />
@@ -173,7 +178,7 @@
     <property name="RequestMappingsPanelWidth2" value="75" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1558687274721" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1558689767205" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -262,7 +267,7 @@
       <updated>1558595620017</updated>
       <workItem from="1558595624802" duration="106000" />
       <workItem from="1558595804073" duration="11370000" />
-      <workItem from="1558613741693" duration="14642000" />
+      <workItem from="1558613741693" duration="16537000" />
     </task>
     <task id="LOCAL-00001" summary="second commit">
       <created>1558617843254</created>
@@ -285,11 +290,18 @@
       <option name="project" value="LOCAL" />
       <updated>1558684759778</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Partie Commercial finie&#10;Partie Manager finie&#10;Partie technicien : Manager finie">
+      <created>1558687399643</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1558687399643</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="26118000" />
+    <option name="totallyTimeSpent" value="28013000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
@@ -420,7 +432,7 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="FIRST">
-          <first_editor relative-caret-position="425">
+          <first_editor relative-caret-position="374">
             <caret line="82" column="98" lean-forward="true" selection-start-line="82" selection-start-column="11" selection-end-line="82" selection-end-column="98" />
           </first_editor>
           <second_editor />
@@ -429,16 +441,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/ipiecoles/java/java230/MyRunner.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="91">
-          <caret line="229" column="38" lean-forward="true" selection-start-line="229" selection-start-column="38" selection-end-line="229" selection-end-column="38" />
+        <state relative-caret-position="242">
+          <caret line="281" column="8" selection-start-line="281" selection-start-column="8" selection-end-line="281" selection-end-column="8" />
           <folding>
             <element signature="docComment;field#logger#0;class#MyRunner#0" />
             <element signature="method#run#0;class#MyRunner#0" />
             <element signature="docComment;method#readFile#0;class#MyRunner#0" />
             <element signature="method#readFile#0;class#MyRunner#0" />
             <element signature="docComment;method#processLine#0;class#MyRunner#0" />
+            <element signature="method#processLine#0;class#MyRunner#0" />
+            <element signature="method#processEmploye#0;class#MyRunner#0" />
             <element signature="docComment;method#processCommercial#0;class#MyRunner#0" />
+            <element signature="method#processCommercial#0;class#MyRunner#0" />
             <element signature="docComment;method#processManager#0;class#MyRunner#0" />
+            <element signature="method#processManager#0;class#MyRunner#0" />
             <element signature="docComment;method#processTechnicien#0;class#MyRunner#0" />
           </folding>
         </state>
