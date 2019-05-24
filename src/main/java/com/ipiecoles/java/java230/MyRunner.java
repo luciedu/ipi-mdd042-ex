@@ -8,6 +8,7 @@ import com.ipiecoles.java.java230.model.Manager;
 import com.ipiecoles.java.java230.model.Technicien;
 import com.ipiecoles.java.java230.repository.EmployeRepository;
 import com.ipiecoles.java.java230.repository.ManagerRepository;
+import jdk.internal.org.objectweb.asm.tree.TryCatchBlockNode;
 import org.aspectj.weaver.ast.Or;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -20,9 +21,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.management.Query;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -210,9 +215,9 @@ public class MyRunner implements CommandLineRunner {
         }
 
         // contrôle du salaire
-        double S ;
+        double Salaire ;
         try {
-            S = Double.parseDouble(managerFields[4]);
+            Salaire = Double.parseDouble(managerFields[4]);
         } catch (Exception e) {
             throw new BatchException(managerFields[4] + " n'est pas un nombre valide pour un salaire" );
         }
@@ -224,7 +229,7 @@ public class MyRunner implements CommandLineRunner {
         m.setNom(managerFields[1]);
         m.setPrenom(managerFields[2]);
         m.setDateEmbauche(D);
-        m.setSalaire(S);
+        m.setSalaire(Salaire);
 
         employes.add(m);
     }
@@ -235,7 +240,7 @@ public class MyRunner implements CommandLineRunner {
      * @throws BatchException s'il y a un problème sur cette ligne
      */
     private void processTechnicien(String ligneTechnicien) throws BatchException, TechnicienException {
-        //TODO
+
         String[] technicienFields = ligneTechnicien.split(",");
 
         // nombre de champs
@@ -259,29 +264,34 @@ public class MyRunner implements CommandLineRunner {
         }
 
         // contrôle du salaire
-        double S ;
+        double Salaire ;
         try {
-            S = Double.parseDouble(technicienFields[4]);
+            Salaire = Double.parseDouble(technicienFields[4]);
         } catch (Exception e) {
             throw new BatchException(technicienFields[4] + " n'est pas un nombre valide pour un salaire" );
         }
 
         // contrôle du grade
-        int i ;
+        int grade ;
         try {
-            i = Integer.parseInt(technicienFields[5]);
+            grade = Integer.parseInt(technicienFields[5]);
         } catch (Exception e) {
             throw new BatchException("Le grade du technicien est incorrect : " + technicienFields[5] );
         }
-
-        if (i < 1 || i > 5){
-            throw new BatchException("Le grade doit être compris entre 1 et 5 :" );
-        }
+//        if (grade < 1 || grade > 5){
+//            throw new BatchException("Le grade doit être compris entre 1 et 5 :" );
+//        }
 
         // contrôle du matricule du manager
         if (!technicienFields[6].matches(REGEX_MATRICULE_MANAGER))
         {
             throw new BatchException("La chaîne " + technicienFields[6] + " ne respecte pas l'expression régulière " + REGEX_MATRICULE_MANAGER);
+        }
+
+        //vérification existance
+        if (managerRepository.findByMatricule(technicienFields[6]) == null)
+        {
+            throw new BatchException("Le manager de matricule " + technicienFields[6] + " n'a pas été trouvé dans le fichier ou en base de données ");
         }
 
         // ajout en base de données
@@ -290,11 +300,15 @@ public class MyRunner implements CommandLineRunner {
         t.setNom(technicienFields[1]);
         t.setPrenom(technicienFields[2]);
         t.setDateEmbauche(D);
-        t.setSalaire(S);
-        t.setGrade(i);
-        //t.setManager(technicienFields[6]);
+        try {
+            t.setGrade(grade);
+            }
+        catch (TechnicienException e){
+            throw new BatchException("Le grade doit être compris entre 1 et 5 :" );
+        }
 
-
+        t.setSalaire(Salaire);
+        t.setManager(managerRepository.findByMatricule(technicienFields[6]));
 
         employes.add(t);
 
