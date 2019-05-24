@@ -62,6 +62,7 @@ public class MyRunner implements CommandLineRunner {
         String fileName = "employes.csv";
         readFile(fileName);
         //readFile(strings[0]);
+        employeRepository.save(employes);
     }
 
     /**
@@ -69,7 +70,7 @@ public class MyRunner implements CommandLineRunner {
      * @param fileName Le nom du fichier (à mettre dans src/main/resources)
      * @return une liste contenant les employés à insérer en BDD ou null si le fichier n'a pas pu être le
      */
-    public List<Employe> readFile(String fileName){
+    public List<Employe> readFile(String fileName) throws Exception {
         Stream<String> stream;
         logger.info("Lecture du fichier : " + fileName);
 
@@ -102,7 +103,7 @@ public class MyRunner implements CommandLineRunner {
      * @throws BatchException si le type d'employé n'a pas été reconnu
      */
     private void processLine(String ligne) throws BatchException {
-        //TODO :
+
         switch (ligne.substring(0,1)){
             case "T" :
                 processTechnicien(ligne);
@@ -114,20 +115,19 @@ public class MyRunner implements CommandLineRunner {
                 processCommercial(ligne);
                 break;
             default:
-                throw new BatchException("Type d'employé inconnu");
+                throw new BatchException("Type d'employé inconnu : " + ligne.substring(0,1));
         }
     }
 
     private void processEmploye(Employe employe, String ligneEmploye,String regexMatricule) throws BatchException {
         String[]employeFields = ligneEmploye.split(",");
 
-        //controle matricule
-        //String regexMatricule = "";
+        //controle le matricule
         if (!employeFields[0].matches(regexMatricule)){
             throw new BatchException("la chaîne "+ employeFields[0] +" ne respecte pas l'expression régulière " + regexMatricule );
         }
 
-        //controle de la date
+        //controle la date
         LocalDate d =null;
         try
         {
@@ -137,7 +137,7 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException(employeFields[3] + " ne respecte pas le format de date dd/MM/yyyy");
         }
 
-        //controle du salaire
+        //controle le salaire
         double salaire= 0;
         try {
             salaire = Double.parseDouble(employeFields[4]);
@@ -145,13 +145,12 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException(employeFields[4] + " n'est pas un nombre valide pour un salaire");
         }
 
+        // ajout dans la liste employé
         employe.setMatricule(employeFields[0]);
         employe.setNom(employeFields[1]);
         employe.setPrenom(employeFields[2]);
         employe.setDateEmbauche(d);
-        employe.setSalaire(Double.parseDouble(employeFields[4]));
-
-
+        employe.setSalaire(salaire);
 
     }
 
@@ -163,6 +162,7 @@ public class MyRunner implements CommandLineRunner {
     private void processCommercial(String ligneCommercial) throws BatchException {
 
         String[] commercialFields = ligneCommercial.split(",");
+        Commercial c = new Commercial();
 
         // nombre de champs
         if (commercialFields.length != NB_CHAMPS_COMMERCIAL)
@@ -209,9 +209,7 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("La performance du commercial est incorrecte : " + commercialFields[6]);
         }
 
-
-        // ajout en base de données
-        Commercial c = new Commercial();
+        // ajout dans la liste employé
         processEmploye(c,ligneCommercial,REGEX_MATRICULE);
         c.setCaAnnuel(CA);
         c.setPerformance(P);
@@ -228,6 +226,7 @@ public class MyRunner implements CommandLineRunner {
     private void processManager(String ligneManager) throws BatchException {
 
         String[] managerFields = ligneManager.split(",");
+        Manager m = new Manager();
 
         // nombre de champs
         if (managerFields.length != NB_CHAMPS_MANAGER)
@@ -260,7 +259,7 @@ public class MyRunner implements CommandLineRunner {
 
 
         // ajout en base de données
-        Manager m = new Manager();
+
         processEmploye(m,ligneManager,REGEX_MATRICULE_MANAGER);
         employes.add(m);
     }
@@ -273,6 +272,7 @@ public class MyRunner implements CommandLineRunner {
     private void processTechnicien(String ligneTechnicien) throws BatchException {
 
         String[] technicienFields = ligneTechnicien.split(",");
+        Technicien t = new Technicien();
 
         // nombre de champs
         if (technicienFields.length != NB_CHAMPS_TECHNICIEN)
@@ -320,14 +320,20 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("La chaîne " + technicienFields[6] + " ne respecte pas l'expression régulière " + REGEX_MATRICULE_MANAGER);
         }
 
-        //vérification existance
-        if (managerRepository.findByMatricule(technicienFields[6]) == null)
+        // vérification existance
+        ArrayList<String> liste = new ArrayList<>();
+        for (Employe e : employes) {
+            if (e instanceof  Manager){
+                liste.add(e.getMatricule());
+            }
+        }
+
+        if (managerRepository.findByMatricule(technicienFields[6]) == null && !liste.contains(technicienFields[6]))
         {
             throw new BatchException("Le manager de matricule " + technicienFields[6] + " n'a pas été trouvé dans le fichier ou en base de données ");
         }
 
-        // ajout en base de données
-        Technicien t = new Technicien();
+        // ajout dans la liste employé
         try {
             t.setGrade(grade);
             }
@@ -335,18 +341,10 @@ public class MyRunner implements CommandLineRunner {
             throw new BatchException("Le grade doit être compris entre 1 et 5 :" );
         }
 
-        t.setManager(managerRepository.findByMatricule(technicienFields[6]));
         processEmploye(t,ligneTechnicien,REGEX_MATRICULE);
+        t.setManager(managerRepository.findByMatricule(technicienFields[6]));
         employes.add(t);
 
-
-
-
     }
-
-
-
-
-
 
 }
